@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddy AI | Universal Intelligent Assistant</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Markdown & Code Syntax Highlighting -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="gemini-wrapper">
+        <!-- Main Chat Stage (Full Width) -->
+        <div class="main-stage">
+            <header class="app-header">
+                <div class="header-left">
+                    <div class="brand">
+                        <div class="gemini-sparkle">✦</div>
+                        <div class="brand-text">
+                            <h1>Reddy AI</h1>
+                            <span class="badge">PRO 3.6</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="header-actions">
+                    <button class="new-search-btn" id="new-chat-btn" title="Start New Search">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        <span>New Search</span>
+                    </button>
+                    <div id="auth-section">
+                        {% if user %}
+                            <div class="user-pill">
+                                <span class="user-dot"></span>
+                                <span class="user-name">{{ user.username }}</span>
+                                <button id="logout-btn" class="auth-btn-ghost">Logout</button>
+                            </div>
+                        {% else %}
+                            <button id="open-auth-btn" class="auth-btn-primary">Sign In</button>
+                        {% endif %}
+                    </div>
+                </div>
+            </header>
+
+            <main class="chat-viewport" id="chat-viewport">
+                <div class="messages-container" id="messages-container">
+                    <div class="hero-welcome" id="hero-welcome">
+                        <div class="hero-sparkle">✦</div>
+                        <h2 class="hero-gradient-text" id="hero-title">Hello, {% if user %}{{ user.username }}{% else %}Reddy{% endif %}</h2>
+                        <p class="hero-subtext" id="hero-subtitle">Ask anything to receive direct, comprehensive answers and step-by-step reasoning.</p>
+                        
+                        <div class="prompt-grid" id="prompt-grid">
+                            <button class="prompt-card" data-prompt="when did india get independancy">
+                                <span class="card-icon">🇮🇳</span>
+                                <span class="card-title">Indian Independence</span>
+                                <span class="card-desc">History, date, and movement details</span>
+                            </button>
+                            <button class="prompt-card" data-prompt="Write a complete Python script to solve a Sudoku using backtracking algorithm">
+                                <span class="card-icon">💻</span>
+                                <span class="card-title">Code Algorithm</span>
+                                <span class="card-desc">Python Sudoku Solver with backtracking</span>
+                            </button>
+                            <button class="prompt-card" data-prompt="Explain the difference between supervised, unsupervised, and reinforcement machine learning with examples">
+                                <span class="card-icon">🧠</span>
+                                <span class="card-title">Explain Concept</span>
+                                <span class="card-desc">Machine learning paradigm differences</span>
+                            </button>
+                            <button class="prompt-card" data-prompt="Calculate the standard deviation and variance for [15, 22, 28, 35, 40] with step-by-step formula">
+                                <span class="card-icon">📊</span>
+                                <span class="card-title">Math & Stats</span>
+                                <span class="card-desc">Step-by-step statistical calculations</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <div class="gemini-loading" id="gemini-loading" style="display: none;">
+                <div class="spark-spinner"></div>
+                <span>Reddy AI is thinking...</span>
+            </div>
+
+            <footer class="input-dock">
+                <form id="chat-form" class="gemini-input-form">
+                    <textarea 
+                        id="user-input" 
+                        placeholder="Ask Reddy AI anything (Code, Math, College details, Reasoning)..." 
+                        rows="1" 
+                        maxlength="2000"
+                        required
+                    ></textarea>
+                    <button type="submit" id="send-btn" aria-label="Submit Prompt">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </form>
+                <div class="footer-note">Reddy AI Hybrid Intelligence Engine • Powered by Sentence-Transformers & Gemini LLM</div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Auth Modal Popup -->
+    <div class="auth-overlay" id="auth-modal" style="display: none;">
+        <div class="auth-box">
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tab-login">Login</button>
+                <button class="auth-tab" id="tab-signup">Create Account</button>
+                <button class="auth-close" id="auth-close">&times;</button>
+            </div>
+
+            <form id="form-login" class="auth-form">
+                <div class="input-group">
+                    <label>Username or Email</label>
+                    <input type="text" id="login-identifier" required placeholder="Enter username or email">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" required placeholder="••••••••">
+                </div>
+                <div class="auth-error" id="login-error"></div>
+                <button type="submit" class="auth-submit-btn">Sign In to Reddy AI</button>
+            </form>
+
+            <form id="form-signup" class="auth-form" style="display: none;">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="signup-username" required placeholder="e.g. reddy_coder">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="signup-email" required placeholder="name@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="signup-password" required placeholder="Create secure password">
+                </div>
+                <div class="auth-error" id="signup-error"></div>
+                <button type="submit" class="auth-submit-btn">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

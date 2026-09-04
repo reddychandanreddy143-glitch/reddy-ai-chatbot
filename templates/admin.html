@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddy AI | Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: #131314;
+            color: #e3e3e3;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin: 0;
+            padding: 24px;
+        }
+        .header-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        h1 {
+            font-size: 22px;
+            background: linear-gradient(135deg, #4285f4 0%, #9b72cf 50%, #d96570 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 24px 0 12px;
+        }
+        .refresh-btn {
+            background: #1e1f20;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e1f20;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 24px;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 13.5px;
+            vertical-align: top;
+        }
+        th {
+            background: #282a2c;
+            color: #c4c7c5;
+            font-weight: 600;
+        }
+        .tag {
+            background: rgba(155, 114, 207, 0.2);
+            color: #d2b4ff;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .user-tag {
+            background: rgba(66, 133, 244, 0.2);
+            color: #8ab4f8;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .query-text { color: #fff; font-weight: 600; }
+        .response-text { color: #c4c7c5; max-width: 400px; white-space: pre-wrap; font-size: 13px; }
+        .time-text { color: #8e918f; font-size: 12px; white-space: nowrap; }
+    </style>
+</head>
+<body>
+    <div class="header-bar">
+        <h1>✦ Reddy AI • Admin Control & Activity Monitor</h1>
+        <button class="refresh-btn" onclick="window.location.reload()">↻ Refresh Data</button>
+    </div>
+
+    <div class="section-title">👥 Registered Users ({{ users|length }})</div>
+    <table>
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Joined Date (UTC)</th>
+                <th>Last Active (UTC)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for u in users %}
+            <tr>
+                <td>#{{ u['id'] }}</td>
+                <td><span class="user-tag">{{ u['username'] }}</span></td>
+                <td>{{ u['email'] }}</td>
+                <td class="time-text">{{ u['created_at'] }}</td>
+                <td class="time-text">{{ u['last_login'] or 'Never' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" style="text-align: center; color: #8e918f;">No registered accounts yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="section-title">💬 Live Activity Logs (Last 50 Prompts)</div>
+    <table>
+        <thead>
+            <tr>
+                <th>Log ID</th>
+                <th>User</th>
+                <th>Time (UTC)</th>
+                <th>Prompt / Query</th>
+                <th>Engine / Intent</th>
+                <th>Bot Response</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log['id'] }}</td>
+                <td><span class="user-tag">{{ log['username'] }}</span></td>
+                <td class="time-text">{{ log['timestamp'] }}</td>
+                <td class="query-text">{{ log['user_query'] }}</td>
+                <td><span class="tag">{{ log['detected_intent'] }}</span></td>
+                <td class="response-text">{{ log['bot_response'] }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align: center; color: #8e918f;">No logs found yet.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

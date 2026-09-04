@@ -1,0 +1,98 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "hi",
+        "hello",
+        "hey",
+        "good morning",
+        "good afternoon",
+        "good evening",
+        "is anyone there",
+        "hello reddy"
+      ],
+      "responses": [
+        "Hello! I am Reddy AI. How can I assist you with your studies, code, or queries today?",
+        "Hey there! Ready to help you with college information, problem solving, or development.",
+        "Hi! Ask me anything about programming, college schedules, or concepts."
+      ]
+    },
+    {
+      "tag": "identity",
+      "patterns": [
+        "who are you",
+        "what is your name",
+        "tell me about yourself",
+        "who made you",
+        "what are you"
+      ],
+      "responses": [
+        "I am **Reddy AI**, a universal hybrid intelligent assistant engineered with Sentence-Transformers and Google Gemini LLM reasoning capabilities."
+      ]
+    },
+    {
+      "tag": "working_hours",
+      "patterns": [
+        "what are the college office hours",
+        "when does the office open",
+        "office working hours",
+        "college timing",
+        "what time does college close"
+      ],
+      "responses": [
+        "The administrative office and campus facilities operate **Monday through Saturday from 9:00 AM to 5:00 PM** (Closed on Sundays and official government holidays)."
+      ]
+    },
+    {
+      "tag": "admissions",
+      "patterns": [
+        "how to get admission",
+        "what is the admission process",
+        "bca admission details",
+        "admission criteria and eligibility"
+      ],
+      "responses": [
+        "Admissions for BCA and degree programs require completion of 10+2 / Pre-University Education (PUC) with mathematics, statistics, or computer science as a core subject. You can register via the admissions desk or online campus portal."
+      ]
+    },
+    {
+      "tag": "library_info",
+      "patterns": [
+        "library timings",
+        "how many books can i borrow",
+        "is the digital library open",
+        "library rules"
+      ],
+      "responses": [
+        "The central and digital libraries are accessible from **8:30 AM to 5:30 PM**. Students can borrow up to 3 books simultaneously for a duration of 14 days using their student ID card."
+      ]
+    },
+    {
+      "tag": "exam_schedule",
+      "patterns": [
+        "when are the semester exams",
+        "internal assessment dates",
+        "exam timetable",
+        "exam notification"
+      ],
+      "responses": [
+        "Internal assessments (IA) are held mid-semester, while University final semester exams typically occur in November/December for Odd Semesters and May/June for Even Semesters."
+      ]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "bye",
+        "goodbye",
+        "see you later",
+        "talk to you later",
+        "exit"
+      ],
+      "responses": [
+        "Goodbye! Have a great day ahead and feel free to return whenever you have questions.",
+        "Take care! Reach out anytime you need assistance with your tasks."
+      ]
+    }
+  ]
+}

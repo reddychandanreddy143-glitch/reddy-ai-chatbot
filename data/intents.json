@@ -1,0 +1,162 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": [
+        "Hi",
+        "Hello",
+        "Hey",
+        "hlo",
+        "helo",
+        "hai",
+        "Good morning",
+        "Good afternoon",
+        "Good evening",
+        "Hey there",
+        "Is anyone there?"
+      ],
+      "responses": [
+        "Hello! Welcome to CampusAssist AI Helpdesk. How can I help you today?",
+        "Hi there! Feel free to ask about admissions, courses, live campus timings, or fees.",
+        "Hey! How can I assist you with your college queries?"
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "goodbye",
+      "patterns": [
+        "Bye",
+        "See you",
+        "Goodbye",
+        "Have a nice day",
+        "Thanks bye"
+      ],
+      "responses": [
+        "Goodbye! Have a productive day ahead.",
+        "Take care! Reach out anytime if you need more details."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "courses",
+      "patterns": [
+        "What courses do you offer?",
+        "List all courses",
+        "Which branches and programs are available?",
+        "BCA course details",
+        "Tell me about engineering and degree programs",
+        "What can I study here?",
+        "Show available degree courses"
+      ],
+      "responses": [
+        "We offer Undergraduate programs (BCA, B.Sc Computer Science, B.Tech, B.Com, BBA) and Postgraduate programs (MCA, M.Tech, MBA). Which specific program are you interested in?"
+      ],
+      "context_set": "courses_context"
+    },
+    {
+      "tag": "fees",
+      "patterns": [
+        "What is the fee structure?",
+        "How much is the fee for BCA?",
+        "BCA fees per year",
+        "Semester tuition charges",
+        "How much does college cost?"
+      ],
+      "responses": [
+        "Tuition fees range from ₹45,000 to ₹75,000 per semester depending on your stream (BCA is approx. ₹55,000/sem). Detailed breakdown can be collected from the accounts section."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "admissions",
+      "patterns": [
+        "How do I apply for admission?",
+        "Admission procedure",
+        "How to take admission?",
+        "Eligibility criteria for BCA",
+        "When do admissions close?"
+      ],
+      "responses": [
+        "Admissions are currently active! You can apply directly through the college portal with your 10th and 12th marks or visit the campus admissions office on weekdays."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "location",
+      "patterns": [
+        "Where is the college located?",
+        "What is your campus address?",
+        "How to reach the campus?",
+        "College address"
+      ],
+      "responses": [
+        "The campus is located at Knowledge Park, Main Road, Bengaluru, Karnataka. It is accessible by metro and BMTC buses."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "contact",
+      "patterns": [
+        "How can I contact the office?",
+        "Phone number",
+        "Email address",
+        "Helpdesk phone"
+      ],
+      "responses": [
+        "You can reach the admission helpdesk at +91 80 1234 5678 or email support@college.edu.in."
+      ],
+      "context_set": ""
+    },
+    {
+      "tag": "general_timings",
+      "patterns": [
+        "What are the general working hours?",
+        "Standard college timings",
+        "Office hours"
+      ],
+      "responses": [
+        "Standard administrative hours are Monday to Saturday, 9:00 AM to 5:00 PM. We are closed on Sundays."
+      ],
+      "context_set": "working_hours_context"
+    },
+    {
+      "tag": "dynamic_schedule_query",
+      "patterns": [
+        "tomorrow is open this clg",
+        "is college open tomorrow",
+        "is the college open today",
+        "is it open right now",
+        "are you open today",
+        "can I visit tomorrow",
+        "is tomorrow a holiday",
+        "is college open on sunday",
+        "what time is it now",
+        "will the office be open tomorrow"
+      ],
+      "responses": [],
+      "context_set": "working_hours_context"
+    },
+    {
+      "tag": "working_hours_sunday",
+      "patterns": [
+        "What about Sunday?",
+        "Is it open on Sunday?",
+        "Are you open on weekends?",
+        "Sunday timings"
+      ],
+      "responses": [
+        "The administrative office is closed every Sunday and on government public holidays."
+      ],
+      "context_filter": "working_hours_context",
+      "context_set": ""
+    },
+    {
+      "tag": "fallback",
+      "patterns": [],
+      "responses": [
+        "I'm not sure about that. You can ask me about courses, fees, admissions, campus location, or live working hours ('Is college open tomorrow?')."
+      ],
+      "context_set": ""
+    }
+  ]
+}
