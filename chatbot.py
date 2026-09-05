@@ -5,8 +5,8 @@ import os
 import google.generativeai as genai
 from nlp import IntentClassifier
 
-# Read directly from environment variable for secure GitHub hosting and cloud deployment
-API_KEY = os.environ.get("GEMINI_API_KEY", "")
+# Check both environment variable names so either one works
+API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or ""
 
 class ChatbotEngine:
     def __init__(self, intents_path: str = "intents.json"):
@@ -18,13 +18,16 @@ class ChatbotEngine:
         self._setup_gemini()
 
     def _setup_gemini(self):
+        # Refresh key in case it was loaded after import
         if not self.api_key:
-            print("[!] GEMINI_API_KEY environment variable not found.")
+            self.api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or ""
+
+        if not self.api_key:
+            print("[!] GEMINI_API_KEY or GOOGLE_API_KEY environment variable not found.")
             return
         try:
             genai.configure(api_key=self.api_key)
             
-            # System instruction tells the model to give thorough, well-formatted answers
             system_instruction = (
                 "You are Reddy AI, an intelligent, helpful academic and reasoning assistant. "
                 "Provide detailed, comprehensive, and well-explained answers using markdown, "
@@ -33,7 +36,7 @@ class ChatbotEngine:
             )
             
             self.model = genai.GenerativeModel(
-                model_name="gemini-3.6-flash",
+                model_name="gemini-1.5-flash",
                 system_instruction=system_instruction
             )
             print("[✓] Native Gemini Chat Engine connected.")
@@ -59,10 +62,10 @@ class ChatbotEngine:
         follow_up_words = {"it", "this", "that", "them", "these", "roles", "who", "more", "why", "how", "what", "when", "where"}
         is_general_or_followup = any(w in follow_up_words for w in words) or len(words) > 5
 
-        # 1. Check local intents ONLY for short, specific campus keywords (timings, fee, admissions)
+        # 1. Check local intents for short specific queries
         if not is_general_or_followup:
             intent, confidence, local_response = self.classifier.match_intent(clean_query)
-            if local_response and confidence >= 0.85:
+            if local_response and confidence >= 0.80:
                 return {"response": local_response, "intent": intent, "confidence": float(confidence)}
 
         # 2. Native Gemini Multi-Turn Reasoning
@@ -72,7 +75,6 @@ class ChatbotEngine:
                 return {"response": "⚠️ AI Engine offline. Please check API key configuration.", "intent": "error", "confidence": 0.0}
 
         try:
-            # Use Gemini's built-in send_message
             chat = self._get_chat_session(session_id)
             response = chat.send_message(clean_query)
             
@@ -83,7 +85,6 @@ class ChatbotEngine:
                     "confidence": 0.99
                 }
         except Exception as e:
-            # If the active chat encounters an expired token or error, reset that session
             self.active_chats.pop(session_id, None)
             return {"response": f"⚠️ API Error: {str(e)}", "intent": "error", "confidence": 0.0}
 
