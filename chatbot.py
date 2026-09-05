@@ -14,6 +14,7 @@ class ChatbotEngine:
         self.active_chats = {}
         self.api_key = API_KEY
         self.model = None
+        self.model_name = None
         self._setup_gemini()
 
     def _setup_gemini(self):
@@ -33,21 +34,48 @@ class ChatbotEngine:
                 "bold headers, and bullet points. Never cut off your responses mid-sentence. "
                 "Always understand follow-up questions in the context of the conversation."
             )
-            
-            # List of models to try in order of preference
-            candidate_models = ["gemini-2.5-flash", "gemini-pro", "gemini-1.0-pro"]
-            
-            for m_name in candidate_models:
-                try:
-                    test_model = genai.GenerativeModel(
-                        model_name=m_name,
-                        system_instruction=system_instruction
-                    )
-                    self.model = test_model
-                    print(f"[✓] Native Gemini Chat Engine connected using model: {m_name}")
+
+            # Dynamically query Google's ModelService for models that support generateContent
+            available_models = []
+            try:
+                for m in genai.list_models():
+                    if "generateContent" in m.supported_generation_methods:
+                        available_models.append(m.name)
+            except Exception as list_err:
+                print(f"[*] Could not query model list: {list_err}")
+
+            # Preferred order of models
+            preferred_order = [
+                "gemini-2.5-flash",
+                "gemini-1.5-flash",
+                "gemini-pro"
+            ]
+
+            selected_model = None
+
+            # 1. Match from live list if available
+            for pref in preferred_order:
+                for live_m in available_models:
+                    if pref in live_m:
+                        selected_model = live_m
+                        break
+                if selected_model:
                     break
-                except Exception:
-                    continue
+
+            # 2. If no preferred match found in list, take the first content-generation model
+            if not selected_model and available_models:
+                selected_model = available_models[0]
+
+            # 3. Fallback to default if list_models was blocked
+            if not selected_model:
+                selected_model = "gemini-1.5-flash"
+
+            self.model_name = selected_model
+            self.model = genai.GenerativeModel(
+                model_name=self.model_name,
+                system_instruction=system_instruction
+            )
+            print(f"[✓] Native Gemini Chat Engine connected using verified model: {self.model_name}")
 
         except Exception as e:
             print(f"[!] Gemini Setup Error: {e}")
@@ -94,6 +122,7 @@ class ChatbotEngine:
                     "confidence": 0.99
                 }
         except Exception as e:
+            # If the current model fails, clear session to prevent stale state
             self.active_chats.pop(session_id, None)
             return {"response": f"⚠️ API Error: {str(e)}", "intent": "error", "confidence": 0.0}
 
