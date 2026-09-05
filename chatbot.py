@@ -5,26 +5,25 @@ import os
 import google.generativeai as genai
 from nlp import IntentClassifier
 
-# Check both environment variable names so either one works
+# Check both environment variable names
 API_KEY = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or ""
 
 class ChatbotEngine:
     def __init__(self, intents_path: str = "intents.json"):
         self.classifier = IntentClassifier(intents_path)
-        # Store native Gemini chat sessions per session/user
         self.active_chats = {}
         self.api_key = API_KEY
         self.model = None
         self._setup_gemini()
 
     def _setup_gemini(self):
-        # Refresh key in case it was loaded after import
         if not self.api_key:
             self.api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY") or ""
 
         if not self.api_key:
             print("[!] GEMINI_API_KEY or GOOGLE_API_KEY environment variable not found.")
             return
+
         try:
             genai.configure(api_key=self.api_key)
             
@@ -35,11 +34,21 @@ class ChatbotEngine:
                 "Always understand follow-up questions in the context of the conversation."
             )
             
-            self.model = genai.GenerativeModel(
-                model_name="gemini-1.5-flash",
-                system_instruction=system_instruction
-            )
-            print("[✓] Native Gemini Chat Engine connected.")
+            # List of models to try in order of preference
+            candidate_models = ["gemini-2.5-flash", "gemini-pro", "gemini-1.0-pro"]
+            
+            for m_name in candidate_models:
+                try:
+                    test_model = genai.GenerativeModel(
+                        model_name=m_name,
+                        system_instruction=system_instruction
+                    )
+                    self.model = test_model
+                    print(f"[✓] Native Gemini Chat Engine connected using model: {m_name}")
+                    break
+                except Exception:
+                    continue
+
         except Exception as e:
             print(f"[!] Gemini Setup Error: {e}")
             self.model = None
